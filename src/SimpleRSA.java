@@ -10,19 +10,20 @@ public class SimpleRSA{
         try{
 
             Random rand  = new SecureRandom();
-            BigInteger p = BigInteger.probablePrime(128, rand);
-            BigInteger q = BigInteger.probablePrime(128, rand);
+            BigInteger p = BigInteger.probablePrime(1024, rand);
+            BigInteger q = BigInteger.probablePrime(1024, rand);
             BigInteger n = p.multiply(q);
             BigInteger phi_n = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
-            BigInteger e = new BigInteger("65537");
 
 
-            while (e.compareTo(BigInteger.ONE)<= 0 || e.compareTo(phi_n) >=0 )
-                if(e.gcd(phi_n).equals(BigInteger.ONE)) {
+            BigInteger e = new BigInteger(phi_n.bitLength(), rand);//(p-1) * (q-1)
+            while (e.compareTo(BigInteger.ONE) <= 0 || e.compareTo(phi_n) >= 0)
+                if (e.gcd(phi_n).equals(BigInteger.ONE))
                     break;
-                }
+                else
+                    e = new BigInteger(phi_n.bitLength(), rand); //got an e with gcd(e, phi_n) == 1
+            BigInteger d = e.modInverse(phi_n);//generate d
 
-            BigInteger d = e.modInverse(phi_n);
             BufferedReader in = new BufferedReader((new InputStreamReader(System.in)));
             System.out.println("Enter the message to encrypt");
             String mstring = in.readLine();
